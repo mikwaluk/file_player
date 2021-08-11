@@ -143,7 +143,7 @@ void ROSThread::run()
 
 void ROSThread::Ready()
 {
-
+  setlocale(LC_NUMERIC, "C");
   data_stamp_thread_.active_ = false;
   data_stamp_thread_.cv_.notify_all();
   if(data_stamp_thread_.thread_.joinable())  data_stamp_thread_.thread_.join();
@@ -452,9 +452,9 @@ void ROSThread::Ready()
         vrs_data.GNVTG_mode = GNVTG_mode;
         vrs_data_[stamp] = vrs_data;
 
-//        nav_msgs::Odometry gps_odom;
-//        gps_odom.header.stamp.fromNSec(stamp);
-//        gps_odom.header.frame_id = "gps_odom";
+        nav_msgs::Odometry gps_odom;
+        gps_odom.header.stamp.fromNSec(stamp);
+        gps_odom.header.frame_id = "gps_odom";
 
 //        //set the position
 //        gps_odom.pose.pose.position.x = x_coordinate;
@@ -532,11 +532,54 @@ void ROSThread::Ready()
   sensor_msgs::MagneticField mag_data;
   imu_data_.clear();
   mag_data_.clear();
+  //ifstream inFile;
 
-
-  while(1){
-    int length = fscanf(fp,"%ld,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf\n",&stamp,&q_x,&q_y,&q_z,&q_w,&x,&y,&z,&g_x,&g_y,&g_z,&a_x,&a_y,&a_z,&m_x,&m_y,&m_z);
-    if(length != 8 && length != 17) break;
+  //inFile.open((data_folder_path_+"/sensor_data/xsens_imu.csv").c_str());
+  //std::string line;
+ // vector<string> result;
+ // while(std::getline(inFile, line)){
+ //  stringstream ss(line);
+ //   while( ss.good() )
+ //   {
+ //     string substr;
+ //     getline( ss, substr, ',' );
+ //     result.push_back( substr );
+ //   }
+ //   for (const std::string elem : result)
+ //   {
+ //     cout << elem << " ";
+ //   }
+    
+    
+ /*   cout << stamp << " " << stol(result.at(0)) << " " << result.at(0) << endl;
+    stamp = stol(result.at(0));
+    q_x = stod(result.at(1));
+    cout << q_x << " " << stod("12.345") << " " << result.at(1) << endl;
+    q_y = stod(result.at(2));
+    cout << q_y << " " << stod(result.at(2)) << " " << result.at(2) << endl;
+    q_z = stod(result.at(3));
+    cout << q_z << " " << stod(result.at(3)) << " " << result.at(3) << endl;
+    q_w = stod(result.at(4));
+    cout << q_w << " " << stod(result.at(4)) << " " << result.at(4) << endl;
+    x = stod(result.at(5));
+    y = stod(result.at(6));
+    z = stod(result.at(7));
+    g_x = stod(result.at(8));
+    g_y = stod(result.at(9));
+    g_z = stod(result.at(10));
+    a_x = stod(result.at(11));
+    a_y = stod(result.at(12));
+    a_z = stod(result.at(13));
+    m_x = stod(result.at(14));
+    m_y = stod(result.at(15));
+    m_z = stod(result.at(16));
+    cout << stamp << " " << q_x << " " << q_y << " " << q_z << " " << q_w << " " << x << " " << y << " " << z << endl;*/
+  while(1) {
+    int length = std::fscanf(fp,"%ld,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf\n",&stamp,&q_x,&q_y,&q_z,&q_w,&x,&y,&z,&g_x,&g_y,&g_z,&a_x,&a_y,&a_z,&m_x,&m_y,&m_z);
+    if(length != 8 && length != 17)
+    {
+      break;
+    }
     if(length == 8){
       imu_data.header.stamp.fromNSec(stamp);
       imu_data.header.frame_id = "imu";
@@ -1070,7 +1113,7 @@ void ROSThread::VrsThread()
       //process
       if(vrs_data_.find(data) != vrs_data_.end()){
         vrs_pub_.publish(vrs_data_[data]);
-//        gps_odometry_pub_.publish(gps_odometry_data_[data]);
+        gps_odometry_pub_.publish(gps_odometry_data_[data]);
       }
 
     }
@@ -1512,8 +1555,8 @@ void ROSThread::StereoThread()
         string current_stereo_right_name = data_folder_path_ + "/image/stereo_right" +"/"+ to_string(data)+".png";
         cv::Mat current_left_image;
         cv::Mat current_right_image;
-        current_left_image = imread(current_stereo_left_name, CV_LOAD_IMAGE_ANYDEPTH);
-        current_right_image = imread(current_stereo_right_name, CV_LOAD_IMAGE_ANYDEPTH);
+        current_left_image = imread(current_stereo_left_name, cv::IMREAD_ANYDEPTH);
+        current_right_image = imread(current_stereo_right_name, cv::IMREAD_ANYDEPTH);
 
         if(!current_left_image.empty() && !current_right_image.empty()){
 
@@ -1553,8 +1596,8 @@ void ROSThread::StereoThread()
           string next_stereo_right_name = data_folder_path_ + "/image/stereo_right" +"/"+ stereo_file_list_[current_img_index+1];
           cv::Mat next_left_image;
           cv::Mat next_right_image;
-          next_left_image = imread(next_stereo_left_name, CV_LOAD_IMAGE_ANYDEPTH);
-          next_right_image = imread(next_stereo_right_name, CV_LOAD_IMAGE_ANYDEPTH);
+          next_left_image = imread(next_stereo_left_name, cv::IMREAD_ANYDEPTH);
+          next_right_image = imread(next_stereo_right_name, cv::IMREAD_ANYDEPTH);
           if(!next_left_image.empty() && !next_right_image.empty()){
               stereo_left_next_img_ = make_pair(stereo_file_list_[current_img_index+1], next_left_image);
               stereo_right_next_img_ = make_pair(stereo_file_list_[current_img_index+1], next_right_image);
@@ -1647,11 +1690,11 @@ void ROSThread::OmniThread()
         cv::Mat omni2_image;
         cv::Mat omni3_image;
         cv::Mat omni4_image;
-        omni0_image = imread(current_omni0_name, CV_LOAD_IMAGE_COLOR);
-        omni1_image = imread(current_omni1_name, CV_LOAD_IMAGE_COLOR);
-        omni2_image = imread(current_omni2_name, CV_LOAD_IMAGE_COLOR);
-        omni3_image = imread(current_omni3_name, CV_LOAD_IMAGE_COLOR);
-        omni4_image = imread(current_omni4_name, CV_LOAD_IMAGE_COLOR);
+        omni0_image = imread(current_omni0_name, cv::IMREAD_COLOR);
+        omni1_image = imread(current_omni1_name, cv::IMREAD_COLOR);
+        omni2_image = imread(current_omni2_name, cv::IMREAD_COLOR);
+        omni3_image = imread(current_omni3_name, cv::IMREAD_COLOR);
+        omni4_image = imread(current_omni4_name, cv::IMREAD_COLOR);
         if(!omni0_image.empty() && !omni1_image.empty() && !omni2_image.empty() && !omni3_image.empty() && !omni4_image.empty()){
 
             cv::cvtColor(omni0_image, omni0_image, cv::COLOR_RGB2BGR);
@@ -1730,11 +1773,11 @@ void ROSThread::OmniThread()
           cv::Mat omni2_image;
           cv::Mat omni3_image;
           cv::Mat omni4_image;
-          omni0_image = imread(next_omni0_name, CV_LOAD_IMAGE_COLOR);
-          omni1_image = imread(next_omni1_name, CV_LOAD_IMAGE_COLOR);
-          omni2_image = imread(next_omni2_name, CV_LOAD_IMAGE_COLOR);
-          omni3_image = imread(next_omni3_name, CV_LOAD_IMAGE_COLOR);
-          omni4_image = imread(next_omni4_name, CV_LOAD_IMAGE_COLOR);
+          omni0_image = imread(next_omni0_name, cv::IMREAD_COLOR);
+          omni1_image = imread(next_omni1_name, cv::IMREAD_COLOR);
+          omni2_image = imread(next_omni2_name, cv::IMREAD_COLOR);
+          omni3_image = imread(next_omni3_name, cv::IMREAD_COLOR);
+          omni4_image = imread(next_omni4_name, cv::IMREAD_COLOR);
           if(!omni0_image.empty() && !omni1_image.empty() && !omni2_image.empty() && !omni3_image.empty() && !omni4_image.empty()){
               cv::cvtColor(omni0_image, omni0_image, cv::COLOR_RGB2BGR);
               cv::cvtColor(omni1_image, omni1_image, cv::COLOR_RGB2BGR);
