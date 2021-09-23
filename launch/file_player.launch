@@ -1,7 +1,11 @@
 <launch>
     <arg name="driver" default="file_player"/>
     <arg name="output" default="screen"/>
+    <arg name="auto_start" default="false"/>
+    <arg name="dataset_path" default=""/>
     <node name="$(arg driver)" pkg="$(arg driver)" type="$(arg driver)" output="$(arg output)">
+        <param name="auto_start" value="$(arg auto_start)"/>
+        <param name="dataset_path" value="$(arg dataset_path)"/>
     </node>
 
     <arg name="camera" default="stereo"/>

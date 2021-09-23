@@ -11,11 +11,21 @@
 int main(int argc, char *argv[])
 {
   ros::init(argc, argv, "file_player");
-  ros::NodeHandle nh;
+  ros::NodeHandle nh("~");
 
   QApplication a(argc, argv);
   MainWindow w;
   w.RosInit(nh);
+  bool auto_start;
+  std::string dataset_path;
+  nh.getParam("auto_start", auto_start);
+  nh.getParam("dataset_path", dataset_path);
+  std::cout << "Path: " << dataset_path << std::endl;
+  if(auto_start)
+  {
+    w.PublicFilePathSet(dataset_path);
+    w.PublicPlay();
+  }
   w.show();
 
    return a.exec();

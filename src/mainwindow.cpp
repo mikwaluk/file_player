@@ -15,7 +15,7 @@ MainWindow::MainWindow(QWidget *parent) :
   play_flag_ = false;
   pause_flag_ = false;
   loop_flag_ = false;
-  stop_skip_flag_ = true;
+  stop_skip_flag_ = false;
 
   connect(my_ros_, SIGNAL(StampShow(quint64)), this, SLOT(SetStamp(quint64)));
   connect(my_ros_, SIGNAL(StartSignal()), this, SLOT(Play()));
@@ -80,6 +80,32 @@ void MainWindow::RosInit(ros::NodeHandle &n)
 void MainWindow::TryClose()
 {
   close();
+}
+
+void MainWindow::PublicPlay()
+{
+  this->Play();
+}
+
+void MainWindow::PublicFilePathSet(const string path)
+{
+  play_flag_ = false;
+  my_ros_->play_flag_ = false;
+  this->ui_->pushButton_2->setText(QString::fromStdString("Play"));
+
+  pause_flag_ = false;
+  my_ros_->pause_flag_ = false;
+  this->ui_->pushButton_3->setText(QString::fromStdString("Pause"));
+
+  QFileDialog dialog;
+  this->ui_->label->setText(QString::fromStdString("Data is beging loaded....."));
+  data_folder_path_ = QString::fromStdString(path);
+  my_ros_->data_folder_path_ = data_folder_path_.toUtf8().constData();
+
+  my_ros_->Ready();
+
+  this->ui_->label->setText(data_folder_path_);
+
 }
 
 
@@ -167,6 +193,7 @@ void MainWindow::StopSkipFlagChange(int value)
     stop_skip_flag_ = true;
     my_ros_->stop_skip_flag_ = true;
   }else if(value == 0){
+    std::cout << "Setting skip flag to false";
     stop_skip_flag_ = false;
     my_ros_->stop_skip_flag_ = false;
   }

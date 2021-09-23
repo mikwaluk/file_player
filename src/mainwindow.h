@@ -47,6 +47,8 @@ public:
   explicit MainWindow(QWidget *parent = 0);
   ~MainWindow();
   void RosInit(ros::NodeHandle &n);
+  void PublicFilePathSet(const string path);
+  void PublicPlay();
 
 private slots:
   void TryClose();

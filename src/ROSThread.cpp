@@ -11,7 +11,7 @@ ROSThread::ROSThread(QObject *parent, QMutex *th_mutex) :
   processed_stamp_ = 0;
   play_rate_ = 1.0;
   loop_flag_ = false;
-  stop_skip_flag_ = true;
+  stop_skip_flag_ = false;
   stereo_active_ = true;
   omni_active_ = false;
   search_bound_ = 10;
@@ -189,7 +189,7 @@ void ROSThread::Ready()
 
   ifstream f((data_folder_path_+"/sensor_data/data_stamp.csv").c_str());
   if(!f.good()){
-     cout << "Please check file path. Input path is wrong" << endl;
+     cout << "Please check file path. Input path is wrong: " << (data_folder_path_+"/sensor_data/data_stamp.csv").c_str() << endl;
      return;
   }
   f.close();
