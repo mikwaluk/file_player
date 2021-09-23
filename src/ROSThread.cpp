@@ -1524,29 +1524,29 @@ void ROSThread::StereoThread()
       if(stereo_file_list_.size() == 0) continue;
 
       //publish
-      if(to_string(data)+".png" == stereo_left_next_img_.first && !stereo_left_next_img_.second.empty() && !stereo_right_next_img_.second.empty()){
+      if(to_string(data)+".png" == stereo_left_next_img_.first && !stereo_left_next_img_.second.empty()/* && !stereo_right_next_img_.second.empty()*/){
         cv_bridge::CvImage left_out_msg;
         left_out_msg.header.stamp.fromNSec(data);
         left_out_msg.header.frame_id = "stereo_left";
         left_out_msg.encoding = sensor_msgs::image_encodings::BAYER_BGGR8;
         left_out_msg.image    = stereo_left_next_img_.second;
-
+/*
         cv_bridge::CvImage right_out_msg;
         right_out_msg.header.stamp.fromNSec(data);
         right_out_msg.header.frame_id = "stereo_right";
         right_out_msg.encoding = sensor_msgs::image_encodings::BAYER_BGGR8;
         right_out_msg.image    = stereo_right_next_img_.second;
-
+*/
         stereo_left_info_.header.stamp.fromNSec(data);
         stereo_left_info_.header.frame_id = "/stereo/left";
-        stereo_right_info_.header.stamp.fromNSec(data);
-        stereo_right_info_.header.frame_id = "/stereo/right";
+        //stereo_right_info_.header.stamp.fromNSec(data);
+        //stereo_right_info_.header.frame_id = "/stereo/right";
 
         stereo_left_pub_.publish(left_out_msg.toImageMsg());
-        stereo_right_pub_.publish(right_out_msg.toImageMsg());
+        //stereo_right_pub_.publish(right_out_msg.toImageMsg());
 
         stereo_left_info_pub_.publish(stereo_left_info_);
-        stereo_right_info_pub_.publish(stereo_right_info_);
+        //stereo_right_info_pub_.publish(stereo_right_info_);
 
       }else{
 //        cout << "Re-load stereo image from image path" << endl;
@@ -1556,32 +1556,32 @@ void ROSThread::StereoThread()
         cv::Mat current_left_image;
         cv::Mat current_right_image;
         current_left_image = imread(current_stereo_left_name, cv::IMREAD_ANYDEPTH);
-        current_right_image = imread(current_stereo_right_name, cv::IMREAD_ANYDEPTH);
+        //current_right_image = imread(current_stereo_right_name, cv::IMREAD_ANYDEPTH);
 
-        if(!current_left_image.empty() && !current_right_image.empty()){
+        if(!current_left_image.empty() /*&& !current_right_image.empty()*/){
 
             cv_bridge::CvImage left_out_msg;
             left_out_msg.header.stamp.fromNSec(data);
             left_out_msg.header.frame_id = "stereo_left";
             left_out_msg.encoding = sensor_msgs::image_encodings::BAYER_BGGR8;
             left_out_msg.image    = current_left_image;
-
+/*
             cv_bridge::CvImage right_out_msg;
             right_out_msg.header.stamp.fromNSec(data);
             right_out_msg.header.frame_id = "stereo_right";
             right_out_msg.encoding = sensor_msgs::image_encodings::BAYER_BGGR8;
             right_out_msg.image    = current_right_image;
-
+*/
             stereo_left_info_.header.stamp.fromNSec(data);
             stereo_left_info_.header.frame_id = "/stereo/left";
-            stereo_right_info_.header.stamp.fromNSec(data);
-            stereo_right_info_.header.frame_id = "/stereo/right";
+            //stereo_right_info_.header.stamp.fromNSec(data);
+            //stereo_right_info_.header.frame_id = "/stereo/right";
 
             stereo_left_pub_.publish(left_out_msg.toImageMsg());
-            stereo_right_pub_.publish(right_out_msg.toImageMsg());
+            //stereo_right_pub_.publish(right_out_msg.toImageMsg());
 
             stereo_left_info_pub_.publish(stereo_left_info_);
-            stereo_right_info_pub_.publish(stereo_right_info_);
+            //stereo_right_info_pub_.publish(stereo_right_info_);
         }
         previous_img_index = 0;
 
@@ -1593,14 +1593,14 @@ void ROSThread::StereoThread()
       if(current_img_index < stereo_file_list_.size()-2){
 
           string next_stereo_left_name = data_folder_path_ + "/image/stereo_left" +"/"+ stereo_file_list_[current_img_index+1];
-          string next_stereo_right_name = data_folder_path_ + "/image/stereo_right" +"/"+ stereo_file_list_[current_img_index+1];
+          //string next_stereo_right_name = data_folder_path_ + "/image/stereo_right" +"/"+ stereo_file_list_[current_img_index+1];
           cv::Mat next_left_image;
-          cv::Mat next_right_image;
+          //cv::Mat next_right_image;
           next_left_image = imread(next_stereo_left_name, cv::IMREAD_ANYDEPTH);
-          next_right_image = imread(next_stereo_right_name, cv::IMREAD_ANYDEPTH);
-          if(!next_left_image.empty() && !next_right_image.empty()){
+          //next_right_image = imread(next_stereo_right_name, cv::IMREAD_ANYDEPTH);
+          if(!next_left_image.empty()/* && !next_right_image.empty()*/){
               stereo_left_next_img_ = make_pair(stereo_file_list_[current_img_index+1], next_left_image);
-              stereo_right_next_img_ = make_pair(stereo_file_list_[current_img_index+1], next_right_image);
+              //stereo_right_next_img_ = make_pair(stereo_file_list_[current_img_index+1], next_right_image);
           }
 
       }
